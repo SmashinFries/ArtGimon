@@ -1,7 +1,15 @@
 import 'react-native-gesture-handler'
 import { Stack } from 'expo-router';
-import { Provider } from 'react-native-paper';
+import { MD3DarkTheme, MD3LightTheme, Provider, adaptNavigationTheme } from 'react-native-paper';
+import { DefaultTheme, DarkTheme as NavDarkTheme, ThemeProvider } from '@react-navigation/native';
+
+const { LightTheme, DarkTheme } = adaptNavigationTheme({
+  reactNavigationLight: DefaultTheme,
+  reactNavigationDark: NavDarkTheme,
+  materialDark: MD3DarkTheme,
+  materialLight: MD3LightTheme,
+});
 
 export default function RootLayout() {
-  return <Provider><Stack screenOptions={{headerShown:false}} /></Provider>;
+  return <Provider theme={MD3DarkTheme}><ThemeProvider value={DarkTheme}><Stack screenOptions={{headerShown:false, animation:'slide_from_right', animationTypeForReplace:'push'}} /></ThemeProvider></Provider>;
 }
