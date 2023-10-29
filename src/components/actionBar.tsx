@@ -1,24 +1,22 @@
-import { Share, StyleSheet, ToastAndroid, View, useWindowDimensions } from "react-native";
-import { Divider, IconButton, useTheme } from "react-native-paper";
+import { Share, StyleSheet, ToastAndroid, View, useWindowDimensions } from 'react-native';
+import { Divider, IconButton, useTheme } from 'react-native-paper';
 import * as WebBrowser from 'expo-web-browser';
-import Animated, { SharedValue, useAnimatedStyle, withTiming } from "react-native-reanimated";
+import Animated, { SharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 type ActionBarProps = {
     sourceUrl: string;
     isAnswered?: boolean;
 };
-export const ActionBar = ({isAnswered, sourceUrl}:ActionBarProps) => {
+export const ActionBar = ({ isAnswered, sourceUrl }: ActionBarProps) => {
     const { colors } = useTheme();
     const { height } = useWindowDimensions();
 
     const slideStyle = useAnimatedStyle(() => {
         return {
-            transform: [
-                {translateY: isAnswered ? withTiming(0) : withTiming(height)}
-            ]
-        }
+            transform: [{ translateY: isAnswered ? withTiming(0) : withTiming(height) }],
+        };
     });
-    return(
+    return (
         <Animated.View style={[styles.container, slideStyle]}>
             <Divider />
             <View style={[styles.iconsContainer]}>
@@ -28,7 +26,12 @@ export const ActionBar = ({isAnswered, sourceUrl}:ActionBarProps) => {
                     iconColor={colors.onSurfaceVariant}
                     onPress={() => ToastAndroid.show('Coming Soon!', ToastAndroid.SHORT)}
                 />
-                <IconButton icon='earth' onPress={() => WebBrowser.openBrowserAsync(sourceUrl, {windowFeatures:{"popup":false}})} />
+                <IconButton
+                    icon="earth"
+                    onPress={() =>
+                        WebBrowser.openBrowserAsync(sourceUrl, { windowFeatures: { popup: false } })
+                    }
+                />
                 <IconButton
                     icon="share-variant"
                     onPress={() => Share.share({ url: 'share_url', message: 'share_url' })}
