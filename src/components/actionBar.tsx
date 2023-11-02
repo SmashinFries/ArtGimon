@@ -2,12 +2,14 @@ import { Share, StyleSheet, ToastAndroid, View, useWindowDimensions } from 'reac
 import { Divider, IconButton, useTheme } from 'react-native-paper';
 import * as WebBrowser from 'expo-web-browser';
 import Animated, { SharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { saveImage } from '../utils/download';
 
 type ActionBarProps = {
     sourceUrl: string;
+    imgUrl: string;
     isAnswered?: boolean;
 };
-export const ActionBar = ({ isAnswered, sourceUrl }: ActionBarProps) => {
+export const ActionBar = ({ isAnswered, sourceUrl, imgUrl }: ActionBarProps) => {
     const { colors } = useTheme();
     const { height } = useWindowDimensions();
 
@@ -20,7 +22,7 @@ export const ActionBar = ({ isAnswered, sourceUrl }: ActionBarProps) => {
         <Animated.View style={[styles.container, slideStyle]}>
             <Divider />
             <View style={[styles.iconsContainer]}>
-                <IconButton icon="download-outline" />
+                <IconButton icon="download-outline" onPress={() => saveImage(imgUrl)} />
                 <IconButton
                     icon="bookmark-outline"
                     iconColor={colors.onSurfaceVariant}
@@ -34,7 +36,7 @@ export const ActionBar = ({ isAnswered, sourceUrl }: ActionBarProps) => {
                 />
                 <IconButton
                     icon="share-variant"
-                    onPress={() => Share.share({ url: 'share_url', message: 'share_url' })}
+                    onPress={() => Share.share({ url: sourceUrl, message: sourceUrl })}
                 />
             </View>
             <Divider />
