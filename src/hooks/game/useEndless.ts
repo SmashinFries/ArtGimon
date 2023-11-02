@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { getFakeImage, getRealImage } from '../../api/api';
 import { UnifiedBooruPost } from '../../api/types';
 import { processAIPosts, processGelPosts, shufflePosts } from '../../utils/arrays';
+import { AiParams } from '../../types/types';
+import { getAIParams } from '../../utils/exif';
 
 export const useEndless = () => {
     const [loading, setLoading] = useState(true);
@@ -13,6 +15,7 @@ export const useEndless = () => {
     const [correct, setCorrect] = useState(0);
     const [incorrect, setIncorrect] = useState(0);
     const [page, setPage] = useState(0);
+    const [aiParams, setAiParams] = useState<AiParams>({});
 
     const handleCorrect = () => {
         setCorrect(correct + 1);
@@ -23,16 +26,19 @@ export const useEndless = () => {
     };
 
     const getRandomImage = useCallback(async (initialPage?:number) => {
+        setLoading(true);
         if (shuffledImages.length < 1) {
             console.log('Fetching new images');
             const results = await fetchImages(initialPage ?? page + 1);
             const selectedImage = results[results.length - 1];
             setPage(prev => prev + 1);
             setCurrentImage(selectedImage);
+            setShuffledImages((prev) => prev.filter((image) => image.weblink !== selectedImage?.weblink));
             setIsCompleted(false);
             setIsCorrect(undefined);
             setAnswer(selectedImage?.isAI ? 'ai' : 'real');
-            setShuffledImages((prev) => prev.filter((image) => image.weblink !== selectedImage?.weblink));
+            setAiParams(await getAIParams(selectedImage.file_url));
+            
         } else {
             const images = [...shuffledImages];
             const selectedImage = images[images.length - 1];
@@ -41,7 +47,9 @@ export const useEndless = () => {
             setIsCorrect(undefined);
             setAnswer(selectedImage?.isAI ? 'ai' : 'real');
             setShuffledImages((prev) => prev.filter((image) => image.weblink !== selectedImage?.weblink));
+            setAiParams(await getAIParams(selectedImage.file_url));
         }
+        setLoading(false);
     }, [shuffledImages]);
 
     const fetchImages = async (page = 0) => {
@@ -98,5 +106,7 @@ export const useEndless = () => {
         getRandomImage,
         isCorrect,
         isCompleted,
+        loading,
+        aiParams
     };
 };
