@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import { MD3DarkTheme, MD3LightTheme, Provider, adaptNavigationTheme } from 'react-native-paper';
 import { DefaultTheme, DarkTheme as NavDarkTheme, ThemeProvider } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
+import { useThemeStore } from '../store/themes';
 
 const { LightTheme, DarkTheme } = adaptNavigationTheme({
     reactNavigationLight: DefaultTheme,
@@ -12,9 +13,10 @@ const { LightTheme, DarkTheme } = adaptNavigationTheme({
 });
 
 const RootLayout = () => {
+    const {darkMode} = useThemeStore();
     return (
-        <Provider theme={MD3DarkTheme}>
-            <ThemeProvider value={DarkTheme}>
+        <Provider theme={darkMode ? MD3DarkTheme : MD3LightTheme}>
+            <ThemeProvider value={darkMode ? DarkTheme : DefaultTheme}>
                 <Stack
                     screenOptions={{
                         headerShown: false,
