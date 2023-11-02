@@ -1,4 +1,4 @@
-import { Appbar, Divider, Text, useTheme } from 'react-native-paper';
+import { Appbar, Divider, IconButton, Portal, Text, useTheme } from 'react-native-paper';
 import { router } from 'expo-router';
 import { View, useWindowDimensions } from 'react-native';
 import Animated, {
@@ -8,11 +8,24 @@ import Animated, {
     useSharedValue,
     withTiming,
 } from 'react-native-reanimated';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { QuitConfirmDialog } from './dialogs';
+import { getHeaderTitle } from '@react-navigation/elements';
+import { NativeStackHeaderProps } from '@react-navigation/native-stack/lib/typescript/src/types';
+
+export const PaperHeader = ({ navigation, route, options, back }:NativeStackHeaderProps) => {
+    const title = getHeaderTitle(options, route.name);
+    return (
+        <Appbar.Header>
+            {back && <Appbar.BackAction onPress={navigation.goBack} />}
+            <Appbar.Content title={title} />
+        </Appbar.Header>
+    );
+};
 
 export const EndlessHeader = () => {
     return (
-        <Appbar.Header mode="medium">
+        <Appbar.Header style={{backgroundColor:'transparent'}}>
             <Appbar.BackAction onPress={() => router.replace('/')} />
             {/* <Appbar.Action icon="magnify" />
             <Appbar.Action icon="dots-vertical" /> */}
@@ -38,6 +51,7 @@ export const GameStateHeader = ({
     const incorrectScale = useSharedValue(0);
     const answerScale = useSharedValue(0);
     const { colors } = useTheme();
+    const [showQuitDialog, setShowQuitDialog] = useState(false);
 
     const correctAnimStyle = useAnimatedStyle(() => {
         return {
@@ -77,18 +91,6 @@ export const GameStateHeader = ({
         incorrectScale.value = withTiming(1.2, { duration: 600 });
     };
 
-    // useEffect(() => {
-    //     if (isCompleted) {
-    //         animateCorrect();
-    //     }
-    // },[isCompleted, correct]);
-
-    // useEffect(() => {
-    //     if (isCompleted) {
-    //         animateIncorrect();
-    //     }
-    // },[isCompleted, incorrect]);
-
     useEffect(() => {
         if (isCompleted) {
             if (isCorrect) {
@@ -104,16 +106,9 @@ export const GameStateHeader = ({
         }
     }, [isCorrect, isCompleted]);
 
-    // useEffect(() => {
-    //     if (!isCompleted) {
-    //         correctScale.value = withTiming(0);
-    //         incorrectScale.value = withTiming(0);
-    //     }
-    // },[isCompleted])
-
     return (
         <Animated.View style={[{ width: '100%' }]}>
-            <View style={{ marginTop: 20, flexDirection: 'row', justifyContent: 'space-evenly' }}>
+            <View style={{ marginTop: 50, flexDirection: 'row', justifyContent: 'space-evenly', }}>
                 <View style={{ justifyContent: 'center', overflow: 'visible' }}>
                     <Animated.View
                         style={[
@@ -134,9 +129,8 @@ export const GameStateHeader = ({
                         {correct}
                     </Animated.Text>
                 </View>
-                <Text>|</Text>
+                <Text style={{alignSelf:'center'}}>|</Text>
                 <View>
-                    {/* <Text style={{fontWeight:'900', color:'red'}} variant="titleLarge">{incorrect}</Text> */}
                     <Animated.View
                         style={[
                             incorrectAnimStyle,
@@ -157,7 +151,7 @@ export const GameStateHeader = ({
                     </Animated.Text>
                 </View>
             </View>
-            <Text style={{ textAlign: 'center' }}>
+            <Text style={{ textAlign: 'center', width:'100%', alignSelf:'center' }}>
                 {correct && incorrect
                     ? (correct / incorrect).toFixed(2)
                     : correct ?? '-' + incorrect}
@@ -176,6 +170,10 @@ export const GameStateHeader = ({
                 {isCompleted ? 'Its ' + (answer === 'ai' ? 'AI' : 'Real') + '!' : ''}
             </Animated.Text>
             <Divider style={{ marginVertical: 20, width: '90%', alignSelf: 'center' }} />
+            <IconButton icon={'close'} onPress={() => setShowQuitDialog(true)} style={{position:'absolute', left:10, top:12, backgroundColor:colors.backdrop}} />
+            <Portal>
+                <QuitConfirmDialog visible={showQuitDialog} onDismiss={() => setShowQuitDialog(false)} />
+            </Portal>
         </Animated.View>
     );
 };
