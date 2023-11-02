@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { ScrollView, View, useWindowDimensions } from 'react-native';
 import { useEndless } from '../../hooks/game/useEndless';
-import { ActivityIndicator, Button, IconButton, List, Text, useTheme } from 'react-native-paper';
+import { ActivityIndicator, Button, Chip, IconButton, List, Portal, Text, useTheme } from 'react-native-paper';
 import { useEffect, useMemo, useState } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { router } from 'expo-router';
@@ -11,6 +11,8 @@ import Animated, {
     FadeOut,
     interpolate,
     interpolateColor,
+    runOnJS,
+    useAnimatedReaction,
     useAnimatedStyle,
     useSharedValue,
     withSpring,
@@ -22,14 +24,11 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ActionBar } from '../../components/actionBar';
 import { isGelbooru } from '../../api/types';
-
-const blurhash =
-    '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
+import { Accordion } from '../../components/animations';
 
 const EndlessGame = () => {
     const { colors } = useTheme();
     const { width, height } = useWindowDimensions();
-    const [loading, setLoading] = useState(true);
     const {
         currentImage,
         correct,
@@ -38,6 +37,8 @@ const EndlessGame = () => {
         answer,
         isCorrect,
         isCompleted,
+        aiParams,
+        loading,
         onSelect,
     } = useEndless();
     const {
@@ -51,7 +52,6 @@ const EndlessGame = () => {
     } = useImagePan();
 
     const [imageHeight, setImageHeight] = useState(0);
-    const [imageWidth, setImageWidth] = useState(0);
 
     // const ar = useMemo(() => (currentImage?.image_width ?? 1) / (currentImage?.image_height ?? 1),[currentImage?.image_width, currentImage?.image_height])
     const ar = useMemo(() => {
@@ -64,14 +64,22 @@ const EndlessGame = () => {
         }
     }, [currentImage]);
 
-    useEffect(() => {
-        if (!isCompleted && answerChoice.value !== 'none') {
-            onSelect(answerChoice.value);
+    // useEffect(() => {
+    //     console.log('choice:', answerChoice.value)
+    //     if (showNext && answerChoice.value !== 'none') {
+    //         console.log('Selecting');
+    //         onSelect(answerChoice.value);
+    //     }
+    // }, [answerChoice, showNext]);
+
+    useAnimatedReaction(() => {return answerChoice.value}, (currentValue, prevValue) => {
+        if (currentValue !== 'none') {
+            runOnJS(onSelect)(currentValue);
         }
-    }, [answerChoice.value, isCompleted]);
+    }, [answer]);
 
     return (
-        <SafeAreaView style={{ alignItems: 'center', height: '100%' }}>
+        <SafeAreaView style={{ alignItems: 'center', height: '100%', backgroundColor:colors.background }}>
             <ScrollView
                 scrollEnabled={isCompleted}
                 contentContainerStyle={{
@@ -108,11 +116,11 @@ const EndlessGame = () => {
                                 ]}
                             >
                                 <Animated.Image
-                                    onLayout={(e) => setImageWidth(e.nativeEvent.layout.width)}
+                                    onLayout={(e) => {setImageHeight(e.nativeEvent.layout.height)}}
                                     resizeMode={'cover'}
                                     progressiveRenderingEnabled={true}
-                                    onLoadStart={() => setLoading(true)}
-                                    onLoadEnd={() => setLoading(false)}
+                                    // onLoadStart={() => setLoading(true)}
+                                    // onLoadEnd={() => setLoading(false)}
                                     source={{ uri: currentImage?.file_url }}
                                     style={[
                                         animatedImgStyle,
@@ -124,11 +132,6 @@ const EndlessGame = () => {
                                         },
                                     ]}
                                 />
-
-                                {/* {isCompleted && <Animated.View entering={FadeIn} exiting={FadeOut} style={{alignSelf:'center', position:'absolute',  justifyContent:'center', width:'100%', height:'auto', aspectRatio:ar, borderRadius:12, backgroundColor:isCorrect ? 'rgba(0, 255, 0, 0.4)' : 'rgba(255, 0, 0,0.4)'}}>
-                                <IconButton style={{alignSelf:'center', backgroundColor:'rgba(0,0,0,0.6)',}} iconColor={answerChoice.value === answer ? "green" : "red"} size={48} icon={answerChoice.value === answer ? 'check' : 'close'} />
-                                <Text variant="titleLarge" style={{color:'#FFF', textAlign:'center'}}>It's {answer === 'ai' ? 'AI' : 'Real'} !</Text>
-                            </Animated.View>} */}
                                 <View
                                     style={{
                                         position: 'absolute',
@@ -144,9 +147,11 @@ const EndlessGame = () => {
                                             {
                                                 position: 'absolute',
                                                 borderRadius: 12,
-                                                transform: [{ rotate: '90deg' }],
+                                                // transform: [{ rotate: '90deg' }],
                                                 alignItems: 'center',
-                                                left: imageWidth,
+                                                bottom:imageHeight + 18,
+                                                // left: imageWidth,
+                                                right:0
                                             },
                                         ]}
                                     >
@@ -158,9 +163,11 @@ const EndlessGame = () => {
                                             {
                                                 position: 'absolute',
                                                 borderRadius: 12,
-                                                transform: [{ rotate: '90deg' }],
+                                                // transform: [{ rotate: '90deg' }],
                                                 alignItems: 'center',
-                                                right: imageWidth,
+                                                // right: imageWidth,
+                                                left:0,
+                                                bottom:imageHeight + 18
                                             },
                                         ]}
                                     >
@@ -188,24 +195,32 @@ const EndlessGame = () => {
                         {/* <Button onPress={() => console.log(imageHeight)}>Test</Button> */}
                         <ActionBar
                             sourceUrl={currentImage?.weblink ?? ''}
+                            imgUrl={currentImage?.file_url ?? ''}
                             isAnswered={answerChoice.value !== 'none'}
                         />
-                        <List.Item
+                        {currentImage?.source && <List.Item
                             title={'Source'}
+                            onPress={() => {WebBrowser.openBrowserAsync(currentImage?.source, { windowFeatures: { popup: false } })}}
                             right={(props) => (
                                 <Text style={[props.style, { color: props.color, width: '70%' }]}>
                                     {currentImage?.source}
                                 </Text>
                             )}
-                        />
-                        <List.Item
-                            title={'Score'}
-                            right={(props) => (
-                                <Text style={[props.style, { color: props.color, width: '70%' }]}>
-                                    {currentImage?.score}
-                                </Text>
-                            )}
-                        />
+                        />}
+                        {Object.keys(aiParams)?.length > 0 && <Accordion title={'AI Parameters'}>
+                            {Object.keys(aiParams)?.map((title, idx) => 
+                            <View key={idx}>
+                                <List.Item title={title} titleStyle={{textTransform:'capitalize'}} />
+                                <Text style={{padding:10, paddingLeft:20}}>{aiParams[title]}</Text>
+                            </View>
+                        )}
+                        </Accordion>}
+                        
+                        <Accordion title={'Tags'} >
+                            <View style={{flexDirection:'row', flexWrap:'wrap'}}>
+                                {currentImage?.tags.split(' ').map((tag, index) => <Chip key={index} style={{margin:10}}>{tag}</Chip>)}
+                            </View>
+                        </Accordion>
                     </View>
                 )}
             </ScrollView>
