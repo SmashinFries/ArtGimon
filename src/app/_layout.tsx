@@ -13,7 +13,7 @@ const { LightTheme, DarkTheme } = adaptNavigationTheme({
 });
 
 const RootLayout = () => {
-    const {darkMode} = useThemeStore();
+    const { darkMode } = useThemeStore();
     return (
         <Provider theme={darkMode ? MD3DarkTheme : MD3LightTheme}>
             <ThemeProvider value={darkMode ? DarkTheme : DefaultTheme}>

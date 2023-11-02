@@ -1,8 +1,8 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { UnifiedBooruPost } from "../api/types";
-import { Appearance } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UnifiedBooruPost } from '../api/types';
+import { Appearance } from 'react-native';
 
 type ThemeState = {
     darkMode: boolean;

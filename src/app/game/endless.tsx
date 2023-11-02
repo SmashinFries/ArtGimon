@@ -1,7 +1,16 @@
 import { Image } from 'expo-image';
 import { ScrollView, View, useWindowDimensions } from 'react-native';
 import { useEndless } from '../../hooks/game/useEndless';
-import { ActivityIndicator, Button, Chip, IconButton, List, Portal, Text, useTheme } from 'react-native-paper';
+import {
+    ActivityIndicator,
+    Button,
+    Chip,
+    IconButton,
+    List,
+    Portal,
+    Text,
+    useTheme,
+} from 'react-native-paper';
 import { useEffect, useMemo, useState } from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { router } from 'expo-router';
@@ -72,14 +81,22 @@ const EndlessGame = () => {
     //     }
     // }, [answerChoice, showNext]);
 
-    useAnimatedReaction(() => {return answerChoice.value}, (currentValue, prevValue) => {
-        if (currentValue !== 'none') {
-            runOnJS(onSelect)(currentValue);
-        }
-    }, [answer]);
+    useAnimatedReaction(
+        () => {
+            return answerChoice.value;
+        },
+        (currentValue, prevValue) => {
+            if (currentValue !== 'none') {
+                runOnJS(onSelect)(currentValue);
+            }
+        },
+        [answer],
+    );
 
     return (
-        <SafeAreaView style={{ alignItems: 'center', height: '100%', backgroundColor:colors.background }}>
+        <SafeAreaView
+            style={{ alignItems: 'center', height: '100%', backgroundColor: colors.background }}
+        >
             <ScrollView
                 scrollEnabled={isCompleted}
                 contentContainerStyle={{
@@ -116,7 +133,9 @@ const EndlessGame = () => {
                                 ]}
                             >
                                 <Animated.Image
-                                    onLayout={(e) => {setImageHeight(e.nativeEvent.layout.height)}}
+                                    onLayout={(e) => {
+                                        setImageHeight(e.nativeEvent.layout.height);
+                                    }}
                                     resizeMode={'cover'}
                                     progressiveRenderingEnabled={true}
                                     // onLoadStart={() => setLoading(true)}
@@ -149,9 +168,9 @@ const EndlessGame = () => {
                                                 borderRadius: 12,
                                                 // transform: [{ rotate: '90deg' }],
                                                 alignItems: 'center',
-                                                bottom:imageHeight + 18,
+                                                bottom: imageHeight + 18,
                                                 // left: imageWidth,
-                                                right:0
+                                                right: 0,
                                             },
                                         ]}
                                     >
@@ -166,8 +185,8 @@ const EndlessGame = () => {
                                                 // transform: [{ rotate: '90deg' }],
                                                 alignItems: 'center',
                                                 // right: imageWidth,
-                                                left:0,
-                                                bottom:imageHeight + 18
+                                                left: 0,
+                                                bottom: imageHeight + 18,
                                             },
                                         ]}
                                     >
@@ -198,27 +217,46 @@ const EndlessGame = () => {
                             imgUrl={currentImage?.file_url ?? ''}
                             isAnswered={answerChoice.value !== 'none'}
                         />
-                        {currentImage?.source && <List.Item
-                            title={'Source'}
-                            onPress={() => {WebBrowser.openBrowserAsync(currentImage?.source, { windowFeatures: { popup: false } })}}
-                            right={(props) => (
-                                <Text style={[props.style, { color: props.color, width: '70%' }]}>
-                                    {currentImage?.source}
-                                </Text>
-                            )}
-                        />}
-                        {Object.keys(aiParams)?.length > 0 && <Accordion title={'AI Parameters'}>
-                            {Object.keys(aiParams)?.map((title, idx) => 
-                            <View key={idx}>
-                                <List.Item title={title} titleStyle={{textTransform:'capitalize'}} />
-                                <Text style={{padding:10, paddingLeft:20}}>{aiParams[title]}</Text>
-                            </View>
+                        {currentImage?.source && (
+                            <List.Item
+                                title={'Source'}
+                                onPress={() => {
+                                    WebBrowser.openBrowserAsync(currentImage?.source, {
+                                        windowFeatures: { popup: false },
+                                    });
+                                }}
+                                right={(props) => (
+                                    <Text
+                                        style={[props.style, { color: props.color, width: '70%' }]}
+                                    >
+                                        {currentImage?.source}
+                                    </Text>
+                                )}
+                            />
                         )}
-                        </Accordion>}
-                        
-                        <Accordion title={'Tags'} >
-                            <View style={{flexDirection:'row', flexWrap:'wrap'}}>
-                                {currentImage?.tags.split(' ').map((tag, index) => <Chip key={index} style={{margin:10}}>{tag}</Chip>)}
+                        {Object.keys(aiParams)?.length > 0 && (
+                            <Accordion title={'AI Parameters'}>
+                                {Object.keys(aiParams)?.map((title, idx) => (
+                                    <View key={idx}>
+                                        <List.Item
+                                            title={title}
+                                            titleStyle={{ textTransform: 'capitalize' }}
+                                        />
+                                        <Text style={{ padding: 10, paddingLeft: 20 }}>
+                                            {aiParams[title]}
+                                        </Text>
+                                    </View>
+                                ))}
+                            </Accordion>
+                        )}
+
+                        <Accordion title={'Tags'}>
+                            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+                                {currentImage?.tags.split(' ').map((tag, index) => (
+                                    <Chip key={index} style={{ margin: 10 }}>
+                                        {tag}
+                                    </Chip>
+                                ))}
                             </View>
                         </Accordion>
                     </View>

@@ -13,7 +13,7 @@ import { QuitConfirmDialog } from './dialogs';
 import { getHeaderTitle } from '@react-navigation/elements';
 import { NativeStackHeaderProps } from '@react-navigation/native-stack/lib/typescript/src/types';
 
-export const PaperHeader = ({ navigation, route, options, back }:NativeStackHeaderProps) => {
+export const PaperHeader = ({ navigation, route, options, back }: NativeStackHeaderProps) => {
     const title = getHeaderTitle(options, route.name);
     return (
         <Appbar.Header>
@@ -25,7 +25,7 @@ export const PaperHeader = ({ navigation, route, options, back }:NativeStackHead
 
 export const EndlessHeader = () => {
     return (
-        <Appbar.Header style={{backgroundColor:'transparent'}}>
+        <Appbar.Header style={{ backgroundColor: 'transparent' }}>
             <Appbar.BackAction onPress={() => router.replace('/')} />
             {/* <Appbar.Action icon="magnify" />
             <Appbar.Action icon="dots-vertical" /> */}
@@ -108,7 +108,7 @@ export const GameStateHeader = ({
 
     return (
         <Animated.View style={[{ width: '100%' }]}>
-            <View style={{ marginTop: 50, flexDirection: 'row', justifyContent: 'space-evenly', }}>
+            <View style={{ marginTop: 50, flexDirection: 'row', justifyContent: 'space-evenly' }}>
                 <View style={{ justifyContent: 'center', overflow: 'visible' }}>
                     <Animated.View
                         style={[
@@ -129,7 +129,7 @@ export const GameStateHeader = ({
                         {correct}
                     </Animated.Text>
                 </View>
-                <Text style={{alignSelf:'center'}}>|</Text>
+                <Text style={{ alignSelf: 'center' }}>|</Text>
                 <View>
                     <Animated.View
                         style={[
@@ -151,7 +151,7 @@ export const GameStateHeader = ({
                     </Animated.Text>
                 </View>
             </View>
-            <Text style={{ textAlign: 'center', width:'100%', alignSelf:'center' }}>
+            <Text style={{ textAlign: 'center', width: '100%', alignSelf: 'center' }}>
                 {correct && incorrect
                     ? (correct / incorrect).toFixed(2)
                     : correct ?? '-' + incorrect}
@@ -170,9 +170,21 @@ export const GameStateHeader = ({
                 {isCompleted ? 'Its ' + (answer === 'ai' ? 'AI' : 'Real') + '!' : ''}
             </Animated.Text>
             <Divider style={{ marginVertical: 20, width: '90%', alignSelf: 'center' }} />
-            <IconButton icon={'close'} onPress={() => setShowQuitDialog(true)} style={{position:'absolute', left:10, top:12, backgroundColor:colors.backdrop}} />
+            <IconButton
+                icon={'close'}
+                onPress={() => setShowQuitDialog(true)}
+                style={{
+                    position: 'absolute',
+                    left: 10,
+                    top: 12,
+                    backgroundColor: colors.backdrop,
+                }}
+            />
             <Portal>
-                <QuitConfirmDialog visible={showQuitDialog} onDismiss={() => setShowQuitDialog(false)} />
+                <QuitConfirmDialog
+                    visible={showQuitDialog}
+                    onDismiss={() => setShowQuitDialog(false)}
+                />
             </Portal>
         </Animated.View>
     );

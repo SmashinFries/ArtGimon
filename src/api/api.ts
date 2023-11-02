@@ -14,7 +14,7 @@ const DanAPI = axios.create({ baseURL: GELBOORU_URL });
 export const getFakeImage = async (params: AIImageFetchParams) => {
     try {
         // 4 tag limit
-        const response = await AiAPI.get<AIbooruPost[]>('/posts.json', { params: params,  });
+        const response = await AiAPI.get<AIbooruPost[]>('/posts.json', { params: params });
         if (response.data.length > 0) {
             return response.data;
         } else {
@@ -37,7 +37,10 @@ export const getRealImage = async (params: GelImageFetchParams) => {
     };
     try {
         // index.php?page=dapi&s=post&q=index&json=1&limit=100&pid=37&tags=-animated+1girl+solo+rating:g
-        const response = await DanAPI.get<GelPostResponse>('/index.php', { params: gelParams, headers: {'fringeBenefits': 'yup'} });
+        const response = await DanAPI.get<GelPostResponse>('/index.php', {
+            params: gelParams,
+            headers: { fringeBenefits: 'yup' },
+        });
 
         if (response.data.post.length > 0) {
             return response.data.post;

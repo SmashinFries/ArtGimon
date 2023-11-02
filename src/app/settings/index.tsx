@@ -4,17 +4,26 @@ import { useThemeStore } from '../../store/themes';
 import { setStatusBarStyle } from 'expo-status-bar';
 
 const SettingsPage = () => {
-    const {darkMode, toggleDarkMode} = useThemeStore();
+    const { darkMode, toggleDarkMode } = useThemeStore();
 
     const onDarkModeChange = (val: boolean) => {
         toggleDarkMode(val);
         setStatusBarStyle(val ? 'light' : 'dark'); // REFUSES TO UPDATE
-        console.log('Dark mode changed to', val ? 'on' : 'off')
+        console.log('Dark mode changed to', val ? 'on' : 'off');
     };
 
     return (
         <ScrollView>
-            <List.Item title="Dark Mode" right={props => <Switch style={[props.style]} value={darkMode} onValueChange={onDarkModeChange} />} />
+            <List.Item
+                title="Dark Mode"
+                right={(props) => (
+                    <Switch
+                        style={[props.style]}
+                        value={darkMode}
+                        onValueChange={onDarkModeChange}
+                    />
+                )}
+            />
         </ScrollView>
     );
 };

@@ -99,7 +99,7 @@ export const MenuIconButton = ({
                 [0, 1],
                 [colors.background, colors.primaryContainer],
             ),
-            width: fixedWidth ?? 'auto'
+            width: fixedWidth ?? 'auto',
             // width: withTiming(buttonWidth.value, { duration: 500 }),
         };
     });

@@ -1,8 +1,8 @@
-import { ReactNode, useCallback, useEffect, useState } from "react";
-import { StyleProp, StyleSheet, TextStyle, View } from "react-native";
-import { Text, TouchableRipple, useTheme } from "react-native-paper";
+import { ReactNode, useCallback, useEffect, useState } from 'react';
+import { StyleProp, StyleSheet, TextStyle, View } from 'react-native';
+import { Text, TouchableRipple, useTheme } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 type ToggableChevronProps = {
     isExpanded: boolean;
