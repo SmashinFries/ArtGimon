@@ -1,65 +1,58 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { UnifiedBooruPost } from '../api/types';
-
-type GameHighScore = {
-    correct: number;
-    incorrect: number;
-    ratio: number;
-};
-
-type GameImage = UnifiedBooruPost & {
-    user_answer: 'ai' | 'real';
-};
-
-type GameModeSession = GameHighScore & {
-    session_length: number;
-    end_date: string;
-    images: GameImage[];
-};
-
-type GameModesStats = {
-    sessions: GameModeSession[];
-    highscore?: GameHighScore;
-    last_played?: string;
-    sessions_played?: number;
-};
 
 type StatsState = {
-    endless: GameModesStats;
+	total_sessions: number;
+	time_spent: number; // in seconds!
+	images_seen: number;
+	incorrect_ai: number;
+	incorrect_real: number;
+	correct_ai: number;
+	correct_real: number;
 };
 
 type StatsAction = {
-    updateEndless: (stats: GameModesStats) => void;
-    // toggleShowNSFW: (mode: SettingsState['showNSFW']) => void;
+	updateStats: ({ key, value }: { key: keyof StatsState; value: number }) => void;
+	increaseStat: (key: keyof StatsState) => void;
+	addTotalTime: (secs: number) => void;
+	resetStats: () => void;
 };
 
 export const useStatsStore = create<StatsState & StatsAction>()(
-    persist(
-        (set, get) => ({
-            endless: get()?.endless ?? {
-                sessions: [],
-                highscore: {
-                    correct: 0,
-                    incorrect: 0,
-                    ratio: 0,
-                },
-                last_played: '',
-                sessions_played: 0,
-            },
-            updateEndless: (stats) =>
-                set(() => ({
-                    endless: {
-                        ...get().endless,
-                        ...stats,
-                        sessions: [...get().endless.sessions, ...stats.sessions],
-                    },
-                })),
-        }),
-        {
-            name: 'stats-storage',
-            storage: createJSONStorage(() => AsyncStorage),
-        },
-    ),
+	persist(
+		(set, get) => ({
+			total_sessions: 0,
+			time_spent: 0,
+			images_seen: 0,
+			incorrect_ai: 0,
+			incorrect_real: 0,
+			correct_ai: 0,
+			correct_real: 0,
+			increaseStat: (key) => {
+				set((state) => ({ [key]: state[key] + 1 }));
+			},
+			updateStats({ key, value }) {
+				set({ [key]: value });
+			},
+			addTotalTime(secs) {
+				set((state) => ({ time_spent: state.time_spent + secs }));
+			},
+			resetStats() {
+				set({
+					total_sessions: 0,
+					time_spent: 0,
+					incorrect_ai: 0,
+					incorrect_real: 0,
+					correct_ai: 0,
+					correct_real: 0,
+					images_seen: 0,
+				});
+			},
+		}),
+		{
+			name: 'stats-storage',
+			storage: createJSONStorage(() => AsyncStorage),
+		},
+	),
 );
