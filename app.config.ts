@@ -48,6 +48,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 				fonts: ['./assets/fonts/LilitaOne-Regular.ttf'],
 			},
 		],
+		[
+			'expo-build-properties',
+			{
+				android: {
+					useLegacyPackaging: true,
+				},
+			},
+		],
 	],
 	extra: {
 		router: {
