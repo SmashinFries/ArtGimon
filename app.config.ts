@@ -34,7 +34,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 			foregroundImage: './assets/adaptive-icon.png',
 			backgroundColor: '#ffffff',
 		},
-		package: IS_DEV ? 'com.kuzutech.ArtGimonDev' : 'com.kuzutech.ArtGimon',
+		package: IS_DEV ? 'com.kuzulabz.ArtGimonDev' : 'com.kuzulabz.ArtGimon',
 	},
 	web: {
 		favicon: './assets/favicon.png',
